@@ -42,6 +42,7 @@ class PlayGame extends Phaser.Scene {
 		this.load.image("ground", require("../assets/platform.png"))
 		this.load.image("star", require("../assets/star.png"))
 		this.load.image("redStar", require("../assets/redStar.png"))
+		this.load.image("masterBall", require("../assets/masterBall.png"))
 		this.load.image("badGuy", require("../assets/badGuy.png"))
 		this.load.spritesheet("dude",require("../assets/dude.png"), {frameWidth: 32, frameHeigth: 48});
 	}
@@ -75,6 +76,11 @@ class PlayGame extends Phaser.Scene {
 		this.enemiesGroup = this.physics.add.group({})
 		this.physics.add.collider(this.enemiesGroup, this.groundGroup)
 		this.physics.add.collider(this.dude, this.enemiesGroup, this.hitEnemy, null, this)
+
+		//masterBall
+		this.masterBall = this.physics.add.group({})
+		this.physics.add.collider(this.masterBall, this.groundGroup)
+		this.physics.add.collider(this.dude, this.masterBall, this.gameWon, null, this)
 		
 		//Scoreboard
 		this.add.image(16,16, "star")
@@ -84,7 +90,10 @@ class PlayGame extends Phaser.Scene {
 		this.gameOverText = this.add.text(600,400,"Game Over", {fontsize: "500px", fill: "#000000"})
 		this.gameOverText.setOrigin(0.5)
 		this.gameOverText.visible = false
-		
+
+		//game Won
+		this.gameWonText=this.add.text(450,400,"Game Won", {fontsize: "500px", fill: "#000000"})
+		this.gameWonText.visible = false
 		//controls
 		this.cursors = this.input.keyboard.createCursorKeys()
 
@@ -123,7 +132,7 @@ class PlayGame extends Phaser.Scene {
 		this.groundGroup.create(Phaser.Math.Between(0,game.config.width), 0, "ground")
 		this.groundGroup.setVelocityY(gameOptions.dudeSpeed / 8)
 		
-		//Falling stars
+		//Falling stars and enemies
 		if(Phaser.Math.Between(0, 1)) {
             this.starsGroup.create(Phaser.Math.Between(0, game.config.width), 0, "star")
 			this.redStarsGroup.create(Phaser.Math.Between(0, game.config.width), 0, "redStar")
@@ -132,6 +141,10 @@ class PlayGame extends Phaser.Scene {
 			this.enemiesGroup.setVelocityY(gameOptions.dudeSpeed)
 			this.redStarsGroup.setVelocityY(gameOptions.dudeSpeed)
         }
+		if(this.score >= 50){
+			this.masterBall.create(Phaser.Math.Between(0, game.config.width),0, "masterBall")
+			this.masterBall.setVelocityY(gameOptions.dudeSpeed)
+		}
 			
 
 	}
@@ -150,8 +163,13 @@ class PlayGame extends Phaser.Scene {
 		this.physics.pause();
 		gameOver = true;
 		this.gameOverText.visible = true
-		
 	}
+	gameWon(dude, masterBall){
+		console.log("You won the game")
+		this.physics.pause();
+		gameOver = true;
+		this.gameWonText.visible = true
+	}	
 	
 	update() {
 		//Controls

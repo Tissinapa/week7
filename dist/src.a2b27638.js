@@ -123,6 +123,8 @@ module.exports = "/platform.4293a96e.png";
 module.exports = "/star.d86a814f.png";
 },{}],"assets/redStar.png":[function(require,module,exports) {
 module.exports = "/redStar.c6680dea.png";
+},{}],"assets/masterBall.png":[function(require,module,exports) {
+module.exports = "/masterBall.64b62e0e.png";
 },{}],"assets/badGuy.png":[function(require,module,exports) {
 module.exports = "/badGuy.12dd15b5.png";
 },{}],"assets/dude.png":[function(require,module,exports) {
@@ -203,6 +205,7 @@ var PlayGame = /*#__PURE__*/function (_Phaser$Scene) {
       this.load.image("ground", require("../assets/platform.png"));
       this.load.image("star", require("../assets/star.png"));
       this.load.image("redStar", require("../assets/redStar.png"));
+      this.load.image("masterBall", require("../assets/masterBall.png"));
       this.load.image("badGuy", require("../assets/badGuy.png"));
       this.load.spritesheet("dude", require("../assets/dude.png"), {
         frameWidth: 32,
@@ -236,7 +239,11 @@ var PlayGame = /*#__PURE__*/function (_Phaser$Scene) {
 
       this.enemiesGroup = this.physics.add.group({});
       this.physics.add.collider(this.enemiesGroup, this.groundGroup);
-      this.physics.add.collider(this.dude, this.enemiesGroup, this.hitEnemy, null, this); //Scoreboard
+      this.physics.add.collider(this.dude, this.enemiesGroup, this.hitEnemy, null, this); //masterBall
+
+      this.masterBall = this.physics.add.group({});
+      this.physics.add.collider(this.masterBall, this.groundGroup);
+      this.physics.add.collider(this.dude, this.masterBall, this.gameWon, null, this); //Scoreboard
 
       this.add.image(16, 16, "star");
       this.scoreText = this.add.text(32, 0, "0", {
@@ -249,7 +256,13 @@ var PlayGame = /*#__PURE__*/function (_Phaser$Scene) {
         fill: "#000000"
       });
       this.gameOverText.setOrigin(0.5);
-      this.gameOverText.visible = false; //controls
+      this.gameOverText.visible = false; //game Won
+
+      this.gameWonText = this.add.text(450, 400, "Game Won", {
+        fontsize: "500px",
+        fill: "#000000"
+      });
+      this.gameWonText.visible = false; //controls
 
       this.cursors = this.input.keyboard.createCursorKeys(); //Dude walking animations
 
@@ -290,7 +303,7 @@ var PlayGame = /*#__PURE__*/function (_Phaser$Scene) {
     key: "addGround",
     value: function addGround() {
       this.groundGroup.create(Phaser.Math.Between(0, game.config.width), 0, "ground");
-      this.groundGroup.setVelocityY(gameOptions.dudeSpeed / 8); //Falling stars
+      this.groundGroup.setVelocityY(gameOptions.dudeSpeed / 8); //Falling stars and enemies
 
       if (Phaser.Math.Between(0, 1)) {
         this.starsGroup.create(Phaser.Math.Between(0, game.config.width), 0, "star");
@@ -299,6 +312,11 @@ var PlayGame = /*#__PURE__*/function (_Phaser$Scene) {
         this.starsGroup.setVelocityY(gameOptions.dudeSpeed);
         this.enemiesGroup.setVelocityY(gameOptions.dudeSpeed);
         this.redStarsGroup.setVelocityY(gameOptions.dudeSpeed);
+      }
+
+      if (this.score >= 50) {
+        this.masterBall.create(Phaser.Math.Between(0, game.config.width), 0, "masterBall");
+        this.masterBall.setVelocityY(gameOptions.dudeSpeed);
       }
     }
   }, {
@@ -322,6 +340,14 @@ var PlayGame = /*#__PURE__*/function (_Phaser$Scene) {
       this.physics.pause();
       gameOver = true;
       this.gameOverText.visible = true;
+    }
+  }, {
+    key: "gameWon",
+    value: function gameWon(dude, masterBall) {
+      console.log("You won the game");
+      this.physics.pause();
+      gameOver = true;
+      this.gameWonText.visible = true;
     }
   }, {
     key: "update",
@@ -351,7 +377,7 @@ var PlayGame = /*#__PURE__*/function (_Phaser$Scene) {
 
   return PlayGame;
 }(Phaser.Scene);
-},{"../assets/platform.png":"assets/platform.png","../assets/star.png":"assets/star.png","../assets/redStar.png":"assets/redStar.png","../assets/badGuy.png":"assets/badGuy.png","../assets/dude.png":"assets/dude.png"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"../assets/platform.png":"assets/platform.png","../assets/star.png":"assets/star.png","../assets/redStar.png":"assets/redStar.png","../assets/masterBall.png":"assets/masterBall.png","../assets/badGuy.png":"assets/badGuy.png","../assets/dude.png":"assets/dude.png"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
